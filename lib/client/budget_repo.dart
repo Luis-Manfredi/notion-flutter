@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:notion_test/models/failure_model.dart';
 import 'package:notion_test/models/item_model.dart';
 
@@ -47,45 +46,57 @@ class BudgetRepository {
 
   Future createItem (String nombre, String categoria, double precio, DateTime fecha) async {
     const url = 'https://api.notion.com/v1/pages/';
-    final response = await _client.post(
-      Uri.parse(url),
-      headers: {
-        HttpHeaders.authorizationHeader: 'Bearer ${dotenv.env['NOTION_API_KEY']}',
-        'Notion-Version': '2022-06-28',
+    final Map<String, dynamic> data = {
+      'parent': {
+        'type': 'database_id',
+        'database_id': '${dotenv.env['NOTION_DATABASE_ID']}'
       },
-      body: {
-        'parent': {
-          'type': 'database_id',
-          'database_id': '${dotenv.env['NOTION_DATABASE_ID']}'
-        },
-        'properties': {
-          'Nombre': {
-            'title': [
-              {
-                'text': {
-                  'content': nombre
-                }
+      'properties': {
+        'Nombre': {
+          'title': [
+            {
+              'text': {
+                'content': nombre
               }
-            ]
-          },
-          'Precio': {
-            'type': 'number',
-            'number': precio
-          },
-          'Fecha': {
-            'type': 'date',
-            'date': {
-              'start': DateFormat.yMd().format(fecha)
             }
+          ]
+        },
+        'Precio': {
+          'type': 'number',
+          'number': precio
+        },
+        'Categorías': {
+          'type': 'select',
+          'select': {
+            'name': categoria
+          }
+        },
+        'Fecha': {
+          'type': 'date',
+          'date': {
+            'start': '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'
           }
         }
       }
-    );
-
-    print(response.statusCode);
-
-    if (response.statusCode == 200) {
-      print('API Connected');
+    }; 
+    try {
+      final response = await _client.post(
+        Uri.parse(url),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${dotenv.env['NOTION_API_KEY']}',
+          'Notion-Version': '2022-06-28',
+          HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(data)
+      );
+      if (response.statusCode == 200) {
+        print(response.statusCode);
+      } else {
+        throw const Failure(message: 'Algo ha salido mal');  
+      }
+    } catch (_) {
+      print(_);
+      throw const Failure(message: 'Algo ha salido mal');
     }
   }
 }

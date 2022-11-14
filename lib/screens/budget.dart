@@ -14,6 +14,7 @@ class Budget extends StatefulWidget {
 }
 
 class _BudgetState extends State<Budget> {
+  final _formKey = GlobalKey<FormState>();
   late Future<List<Item>> _futureItems;
   String? categoryValue; 
   TextEditingController nombreController = TextEditingController();
@@ -51,93 +52,115 @@ class _BudgetState extends State<Budget> {
               )
             ],
           ),
-          titlePadding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
+          titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
           contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nombreController,
-                decoration: InputDecoration(
-                  label: const Text('Nombre', style: TextStyle(color: primary)),
-                  hintText: 'Añadir un nombre',
-                  hintStyle: const TextStyle(color: Colors.black45),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: Colors.black45)
+          content: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: nombreController,
+                    decoration: InputDecoration(
+                      label: const Text('Nombre', style: TextStyle(color: primary)),
+                      hintText: 'Añadir un nombre',
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Colors.black45)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: primary)
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                      )
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Ingrese un nombre' : null
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: primary)
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: precioController,
+                    decoration: InputDecoration(
+                      label: const Text('Precio', style: TextStyle(color: primary)),
+                      hintText: 'Añadir un precio',
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Colors.black45)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: primary)
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                      )
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Ingrese un número' : null
                   ),
-                  errorBorder: OutlineInputBorder(
+                  const SizedBox(height: 15),
+                  DropdownButtonFormField(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                    value: categoryValue,
+                    isExpanded: true,
+                    iconEnabledColor: primary,
+                    hint: const Text('Elegir una categoría'),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'Marketing',
+                        child: Text('Marketing'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Tecnologías',
+                        child: Text('Tecnologías'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Comida',
+                        child: Text('Comida'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Studio',
+                        child: Text('Studio'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Transporte',
+                        child: Text('Transporte'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Varios',
+                        child: Text('Varios'),
+                      )
+                    ], 
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: Colors.black45)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(width: 2, color: primary)
+                      )
+                    ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        categoryValue = value ?? 'Elegir una categoría';
+                      });
+                    },
+                    validator: (value) => value == null ? 'Elegir un valor' : null
                   )
-                )
+                ],
               ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: precioController,
-                decoration: InputDecoration(
-                  label: const Text('Precio', style: TextStyle(color: primary)),
-                  hintText: 'Añadir un precio',
-                  hintStyle: const TextStyle(color: Colors.black45),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: Colors.black45)
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: primary)
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
-                  )
-                )
-              ),
-              const SizedBox(height: 15),
-              DropdownButton(
-                borderRadius: BorderRadius.circular(10),
-                value: categoryValue,
-                underline: Container(),
-                isExpanded: true,
-                iconEnabledColor: primary,
-                hint: const Text('Elegir una categoría'),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Marketing',
-                    child: Text('Marketing'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Tecnologías',
-                    child: Text('Tecnologías'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Comida',
-                    child: Text('Comida'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Studio',
-                    child: Text('Studio'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Transporte',
-                    child: Text('Transporte'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Varios',
-                    child: Text('Varios'),
-                  )
-                ], 
-                onChanged: (String? value) {
-                  setState(() {
-                    categoryValue = value ?? 'Elegir una categoría';
-                  });
-                },
-              )
-            ],
+            ),
           ),
           actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           actionsAlignment: MainAxisAlignment.spaceBetween,
@@ -157,18 +180,21 @@ class _BudgetState extends State<Budget> {
 
             ElevatedButton(
               onPressed: () { 
-                BudgetRepository().createItem(
-                  nombreController.text, 
-                  categoryValue!, 
-                  double.tryParse(precioController.text)!, 
-                  DateTime.now()
-                );
+                final isValid = _formKey.currentState!.validate();
+                if (isValid) {
+                  BudgetRepository().createItem(
+                    nombreController.text, 
+                    categoryValue!, 
+                    double.tryParse(precioController.text)!, 
+                    DateTime.now()
+                  );
 
-                nombreController.clear();
-                precioController.clear();
-                categoryValue = null;
+                  nombreController.clear();
+                  precioController.clear();
+                  categoryValue = null;
 
-                Navigator.pop(context);
+                  Navigator.pop(context);
+                }
               }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: primary,
@@ -183,7 +209,7 @@ class _BudgetState extends State<Budget> {
     );
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: background,
 
       appBar: AppBar(
