@@ -15,6 +15,7 @@ class BudgetRepository {
     _client.close();
   }
 
+  // Read
   Future <List<Item>> getItems () async {
     try {
       final url = '$baseUrl/${dotenv.env['NOTION_DATABASE_ID']}/query/';
@@ -44,6 +45,7 @@ class BudgetRepository {
     }
   }
 
+  // Create
   Future createItem (String nombre, String categoria, double precio, DateTime fecha) async {
     const url = 'https://api.notion.com/v1/pages/';
     final Map<String, dynamic> data = {
@@ -98,5 +100,42 @@ class BudgetRepository {
       print(_);
       throw const Failure(message: 'Algo ha salido mal');
     }
+  }
+
+  // Update
+  Future updateItem (String id, String nombre, double precio, String categoria) async {
+    final url = 'https://api.notion.com/v1/pages/$id';
+    final Map<String, dynamic> data = {
+      'properties': {
+        'Precio': {
+          'number': precio
+        },
+        'Categorías': {
+          'select': {
+            'name': categoria
+          }
+        },
+        'Nombre': {
+          'title': [
+            {
+              'text': {
+                'content': nombre
+              }
+            }
+          ]
+        }
+      }
+    };
+    final response = await _client.patch(
+      Uri.parse(url),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer ${dotenv.env['NOTION_API_KEY']}',
+        'Notion-Version': '2022-06-28',
+        HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode(data)
+    );
+
+    print(response.statusCode);
   }
 }

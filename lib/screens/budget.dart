@@ -194,6 +194,23 @@ class _BudgetState extends State<Budget> {
                   categoryValue = null;
 
                   Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Se ha creado el elemento en la base de datos. Actualice la vista para ver los resultados.',
+                          style: TextStyle(color: text),
+                        ),
+                        duration: Duration(seconds: 5),
+                        backgroundColor: primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          )
+                        ),
+                      )
+                    );
                 }
               }, 
               style: ElevatedButton.styleFrom(
@@ -206,6 +223,204 @@ class _BudgetState extends State<Budget> {
           ],
         ),
       ),
+    );
+
+    void editDialog (String id, String nombre, String precio, String categoria) => showDialog(
+      context: context, 
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+
+          TextEditingController updateNameController = TextEditingController(text: nombre);
+          TextEditingController updatePriceController = TextEditingController(text: precio.toString());
+          String? itemCategory = categoria;
+
+          return AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                const Text('Añadir Nueva Entrada'),
+                CloseButton(
+                  onPressed: () {
+                    categoryValue = null;
+                    Navigator.pop(context);
+                  }, 
+                  color: Colors.black45
+                )
+              ],
+            ),
+            titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
+            contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            content: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: updateNameController,
+                      decoration: InputDecoration(
+                        label: const Text('Nombre', style: TextStyle(color: primary)),
+                        hintText: 'Añadir un nombre',
+                        hintStyle: const TextStyle(color: Colors.black45),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Colors.black45)
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: primary)
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                        )
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Ingrese un nombre' : null
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: updatePriceController,
+                      decoration: InputDecoration(
+                        label: const Text('Precio', style: TextStyle(color: primary)),
+                        hintText: 'Añadir un precio',
+                        hintStyle: const TextStyle(color: Colors.black45),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Colors.black45)
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: primary)
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                        )
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Ingrese un número' : null
+                    ),
+                    const SizedBox(height: 15),
+                    DropdownButtonFormField(
+                      borderRadius: BorderRadius.circular(10),
+                      value: itemCategory,
+                      isExpanded: true,
+                      iconEnabledColor: primary,
+                      hint: const Text('Elegir una categoría'),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Marketing',
+                          child: Text('Marketing'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Tecnologías',
+                          child: Text('Tecnologías'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Comida',
+                          child: Text('Comida'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Studio',
+                          child: Text('Studio'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Transporte',
+                          child: Text('Transporte'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Varios',
+                          child: Text('Varios'),
+                        )
+                      ], 
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: Colors.black45)
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(width: 2, color: primary)
+                        )
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          itemCategory = value ?? 'Elegir una categoría';
+                        });
+                      },
+                      validator: (value) => value == null ? 'Elegir un valor' : null
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  categoryValue = null;
+                  Navigator.pop(context);
+                }, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFdcdcdc),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  minimumSize: const Size(120, 45)
+                ),
+                child: const Text('Cancelar', style: TextStyle(color: primary, fontSize: 18))
+              ),
+
+              ElevatedButton(
+                onPressed: () { 
+                  final isValid = _formKey.currentState!.validate();
+                  if (isValid) {
+                    BudgetRepository().updateItem(
+                      id,
+                      updateNameController.text, 
+                      double.tryParse(updatePriceController.text)!, 
+                      itemCategory!, 
+                    );
+
+                    updateNameController.clear();
+                    updatePriceController.clear();
+                    itemCategory = null;
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Se ha modificado el elemento. Actualice la vista para ver los resultados.',
+                          style: TextStyle(color: text),
+                        ),
+                        duration: Duration(seconds: 5),
+                        backgroundColor: primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)
+                          )
+                        ),
+                      )
+                    );
+                  }
+                }, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  minimumSize: const Size(120, 45)
+                ),
+                child: const Text('Actualizar', style: TextStyle(color: text, fontSize: 18))
+              )
+            ]
+          );
+        }
+      )
     );
 
     return Scaffold(
@@ -259,6 +474,9 @@ class _BudgetState extends State<Budget> {
                       ]
                     ),
                     child: ListTile(
+                      onTap: () {
+                        editDialog(item.id, item.name, item.price, item.category);
+                      },
                       title: Text(item.name),
                       subtitle: Text('${item.category} - ${DateFormat.yMd().format(item.date)}'),
                       trailing: Text('-\$${item.price}', style: const TextStyle(fontSize: 18)),
