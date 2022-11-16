@@ -14,6 +14,7 @@ class Budget extends StatefulWidget {
 }
 
 class _BudgetState extends State<Budget> {
+  // Initialization
   final _formKey = GlobalKey<FormState>();
   late Future<List<Item>> _futureItems;
   String? categoryValue; 
@@ -23,9 +24,11 @@ class _BudgetState extends State<Budget> {
   @override
   void initState() {
     super.initState();
+    // Initial load
     _futureItems = BudgetRepository().getItems();
   }
 
+  // Refresh page
   Future refreshScreen() async {
     _futureItems = BudgetRepository().getItems();
     setState(() {});
@@ -33,7 +36,8 @@ class _BudgetState extends State<Budget> {
 
   @override
   Widget build(BuildContext context) {
-
+    
+    // Add element
     void addDialog () => showDialog(
       context: context, 
       builder: (context) => StatefulBuilder(
@@ -231,6 +235,7 @@ class _BudgetState extends State<Budget> {
       ),
     );
 
+    // Edit element
     void editDialog (String id, String nombre, String precio, String categoria) => showDialog(
       context: context, 
       builder: (context) => StatefulBuilder(
@@ -435,10 +440,85 @@ class _BudgetState extends State<Budget> {
       )
     );
 
+    // Delete element
+    void deleteDialog (String id, String nombre) => showDialog(
+      context: context, 
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Eliminar Entrada'),
+            Row(
+              children: [
+                CloseButton(
+                  onPressed: () {
+                    categoryValue = null;
+                    Navigator.pop(context);
+                  }, 
+                  color: Colors.black45
+                ),
+                const SizedBox(width: 10),
+              ],
+            )
+          ],
+        ),
+        titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
+        contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        content: Text('¿Está seguro que desea eliminar este elemento? \n\n$nombre'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              categoryValue = null;
+              Navigator.pop(context);
+            }, 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFdcdcdc),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              minimumSize: const Size(120, 45)
+            ),
+            child: const Text('Cancelar', style: TextStyle(color: primary, fontSize: 18))
+          ),
+          ElevatedButton(
+            onPressed: () {
+              BudgetRepository().deleteItem(id); 
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Se ha eliminado el elemento $nombre. Actualice la vista para ver los resultados.',
+                    style: const TextStyle(color: text),
+                  ),
+                  duration: const Duration(seconds: 5),
+                  backgroundColor: primary,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)
+                    )
+                  ),
+                )
+              );
+            }, 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              minimumSize: const Size(120, 45)
+            ),
+            child: const Text('Eliminar', style: TextStyle(color: text, fontSize: 18))
+          )
+        ],
+      ),
+    );
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: background,
 
+      // Appbar
       appBar: AppBar(
         backgroundColor: primary,
         actions: [
@@ -486,9 +566,8 @@ class _BudgetState extends State<Budget> {
                       ]
                     ),
                     child: ListTile(
-                      onTap: () {
-                        editDialog(item.id, item.name, item.price, item.category);
-                      },
+                      onTap: () => editDialog(item.id, item.name, item.price, item.category),
+                      onLongPress: () => deleteDialog(item.id, item.name),
                       title: Text(item.name),
                       subtitle: Text('${item.category} - ${DateFormat.yMd().format(item.date)}'),
                       trailing: Text('-\$${item.price}', style: const TextStyle(fontSize: 18)),
@@ -514,6 +593,7 @@ class _BudgetState extends State<Budget> {
     );
   }
 
+  // Paint item border
   Color getBorderColor(String category) {
     switch (category) {
       case 'Marketing':

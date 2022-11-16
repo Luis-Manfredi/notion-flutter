@@ -17,7 +17,6 @@ class Item {
     final id = map['id'];
     final properties = map['properties'] as Map<String, dynamic>;
     final dateString = properties['Fecha']?['date']?['start'];
-    // print(properties['Precio']?['number']); 
     return Item(
       id: id,
       name: properties['Nombre']?['title']?[0]?['plain_text'] ?? '?', 
