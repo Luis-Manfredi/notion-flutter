@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
                     Text('¡Bienvenido!', style: TextStyle(color: text, fontSize: 38)),
                     SizedBox(height: 5),
                     Text(
-                      'Esta aplicación es una integración entre una base de datos en Notion y Flutter', 
+                      'Esta aplicación es una integración entre una base de datos en Notion y Flutter. Creado por Luis Manfredi', 
                       style: TextStyle(color: Color(0xFFDCDCDC), fontSize: 14)
                     ),
                     SizedBox(height: 10),
