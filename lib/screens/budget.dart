@@ -41,15 +41,21 @@ class _BudgetState extends State<Budget> {
           insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Añadir Nueva Entrada'),
-              CloseButton(
-                onPressed: () {
-                  categoryValue = null;
-                  Navigator.pop(context);
-                }, 
-                color: Colors.black45
-              )
+              Row(
+                children: [
+                  CloseButton(
+                    onPressed: () {
+                      categoryValue = null;
+                      Navigator.pop(context);
+                    }, 
+                    color: Colors.black45
+                  ), 
+                  const SizedBox(width: 10),
+                ],
+              ) 
             ],
           ),
           titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
@@ -79,7 +85,7 @@ class _BudgetState extends State<Budget> {
                         borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
                       )
                     ),
-                    validator: (value) => value!.isEmpty ? 'Ingrese un nombre' : null
+                    validator: (value) => value!.isEmpty || value.contains(RegExp(r'(\d+)')) ? 'Ingrese un nombre' : null
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
@@ -101,7 +107,7 @@ class _BudgetState extends State<Budget> {
                         borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
                       )
                     ),
-                    validator: (value) => value!.isEmpty ? 'Ingrese un número' : null
+                    validator: (value) => value!.isEmpty || !value.contains(RegExp(r'(\d+)')) ? 'Ingrese un número' : null
                   ),
                   const SizedBox(height: 15),
                   DropdownButtonFormField(
@@ -238,14 +244,20 @@ class _BudgetState extends State<Budget> {
             insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Añadir Nueva Entrada'),
-                CloseButton(
-                  onPressed: () {
-                    categoryValue = null;
-                    Navigator.pop(context);
-                  }, 
-                  color: Colors.black45
+                const Text('Editar Entrada'),
+                Row(
+                  children: [
+                    CloseButton(
+                      onPressed: () {
+                        categoryValue = null;
+                        Navigator.pop(context);
+                      }, 
+                      color: Colors.black45
+                    ),
+                    const SizedBox(width: 10),
+                  ],
                 )
               ],
             ),
@@ -276,7 +288,7 @@ class _BudgetState extends State<Budget> {
                           borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
                         )
                       ),
-                      validator: (value) => value!.isEmpty ? 'Ingrese un nombre' : null
+                      validator: (value) => value!.isEmpty || value.contains(RegExp(r'(\d+)')) ? 'Ingrese un nombre' : null
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
@@ -298,7 +310,7 @@ class _BudgetState extends State<Budget> {
                           borderSide: const BorderSide(width: 2, color: Color(0xFFC62828))
                         )
                       ),
-                      validator: (value) => value!.isEmpty ? 'Ingrese un número' : null
+                      validator: (value) => value!.isEmpty || !value.contains(RegExp(r'(\d+)')) ? 'Ingrese un número' : null
                     ),
                     const SizedBox(height: 15),
                     DropdownButtonFormField(
@@ -382,7 +394,7 @@ class _BudgetState extends State<Budget> {
                     BudgetRepository().updateItem(
                       id,
                       updateNameController.text, 
-                      double.tryParse(updatePriceController.text)!, 
+                      double.parse(updatePriceController.text), 
                       itemCategory!, 
                     );
 
