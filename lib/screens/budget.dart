@@ -603,6 +603,7 @@ class _BudgetState extends State<Budget> {
             )
           ],
         ),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(context), 
