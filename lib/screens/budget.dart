@@ -466,7 +466,15 @@ class _BudgetState extends State<Budget> {
         ),
         titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        content: Text('¿Está seguro que desea eliminar este elemento? \n\n$nombre'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('¿Está seguro que desea eliminar este elemento?'),
+            const SizedBox(height: 15),
+            Text(nombre, style: const TextStyle(fontWeight: FontWeight.w500)),
+            const SizedBox(height: 5)
+          ],
+        ),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
@@ -514,6 +522,101 @@ class _BudgetState extends State<Budget> {
       ),
     );
 
+    void helpDialog () => showDialog(
+      context: context, 
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Ayuda'),
+            Row(
+              children: [
+                CloseButton(
+                  onPressed: () {
+                    categoryValue = null;
+                    Navigator.pop(context);
+                  }, 
+                  color: Colors.black45
+                ),
+                const SizedBox(width: 10),
+              ],
+            )
+          ],
+        ),
+        titlePadding: const EdgeInsets.fromLTRB(20, 15, 0, 20),
+        contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text.rich(
+              TextSpan(
+                text: 'Para agregar una nueva entrada: ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+                children: [
+                  TextSpan(
+                    text: 'Presionar el botón en la esquina inferior derecha.',
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  )
+                ]
+              )
+            ),
+            SizedBox(height: 15),
+            Text.rich(
+              TextSpan(
+                text: 'Para editar una entrada existente: ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+                children: [
+                  TextSpan(
+                    text: 'Presionar brevemente la tarjeta que desea editar.',
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  )
+                ]
+              )
+            ),
+            SizedBox(height: 15),
+            Text.rich(
+              TextSpan(
+                text: 'Para eliminar una entrada existente: ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+                children: [
+                  TextSpan(
+                    text: 'Dejar presionado la tarjeta que desea eliminar.',
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  )
+                ]
+              )
+            ),
+            SizedBox(height: 15),
+            Text.rich(
+              TextSpan(
+                text: 'Para actualizar la lista de entradas: ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+                children: [
+                  TextSpan(
+                    text: 'Deslizar la pantalla completamente hacia arriba hasta activar el icono de actualizar.',
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  )
+                ]
+              )
+            )
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context), 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              minimumSize: Size(MediaQuery.of(context).size.width, 45)
+            ),
+            child: const Text('Entendido', style: TextStyle(color: text, fontSize: 18))
+          )
+        ],
+      ),
+    );
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: background,
@@ -521,14 +624,14 @@ class _BudgetState extends State<Budget> {
       // Appbar
       appBar: AppBar(
         backgroundColor: primary,
+        title: const Text('Presupuestos', style: TextStyle(color: text, fontSize: 24)),
+        centerTitle: true,
         actions: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('Presupuestos', style: TextStyle(color: text, fontSize: 24)),
-            ],
+          IconButton(
+            onPressed: () => helpDialog(), 
+            icon: const Icon(Icons.help_outline_rounded, color: text)
           ),
-          const SizedBox(width: 20)
+          const SizedBox(width: 10)
         ],
       ),
 
@@ -540,35 +643,30 @@ class _BudgetState extends State<Budget> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final items = snapshot.data!;
-              return ListView.builder(
-                // padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 80),
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemCount: items.length + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) return SpendingChart(items: items);
                   final item = items[index - 1];
         
-                  return Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+                  return Material(
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        width: 4,
-                        color: getBorderColor(item.category)
-                      ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 2),
-                          blurRadius: 6
-                        )
-                      ]
                     ),
                     child: ListTile(
+                      tileColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: getBorderColor(item.category),
+                          width: 4
+                        )
+                      ),
                       onTap: () => editDialog(item.id, item.name, item.price, item.category),
                       onLongPress: () => deleteDialog(item.id, item.name),
-                      title: Text(item.name),
+                      title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.w500)),
                       subtitle: Text('${item.category} - ${DateFormat.yMd().format(item.date)}'),
                       trailing: Text('-\$${item.price}', style: const TextStyle(fontSize: 18)),
                     ),
