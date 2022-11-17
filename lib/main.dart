@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:notion_test/screens/home.dart';
 /*
-Notion_Test
+Notion-Flutter Test
 
 Copyright © 2022 Luis Manfredi
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bestway Marketing',
+      title: 'Notion-Flutter Test',
       debugShowCheckedModeBanner: false,
       home: const Home(),
       theme: ThemeData(
