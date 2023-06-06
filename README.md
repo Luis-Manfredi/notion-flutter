@@ -1,6 +1,7 @@
 # Notion-Flutter Test
 
 This is a CRUD application created with Flutter using a Notion database.
+You will need to configure a .env with the api key and the database id.
 
 ## Getting Started
 
